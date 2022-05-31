@@ -18,8 +18,8 @@ const carZodSchema = z.object({
 
 // solução baseada do site:
 // https://github.com/colinhacks/zod
-const CarVehicle = vehicleZodSchema.merge(carZodSchema);
+const carVehicle = carZodSchema.merge(vehicleZodSchema);
 
-type Car = z.infer<typeof CarVehicle>;
+type Car = z.infer<typeof carVehicle>;
 
-export { Car, carZodSchema };
+export { Car, carZodSchema, carVehicle };
