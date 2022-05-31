@@ -22,12 +22,8 @@ class CarController extends Controller<Car> {
     const { body } = req;
     try {
       const car = await this.service.create(body);
-      if (!car) {
-        return res.status(500).json({ error: this.errors.internal });
-      }
-      if ('error' in car) {
-        return res.status(400).json(car);
-      }
+      if (!car) return res.status(404).json({ error: this.errors.notFound });
+      if ('error' in car) return res.status(400).json(car);
       return res.status(201).json(car);
     } catch (err) {
       return res.status(500).json({ error: this.errors.internal });
@@ -53,13 +49,15 @@ class CarController extends Controller<Car> {
     const { id } = req.params;
     try {
       const car = await this.service.readOne(id);
-      return car
-        ? res.json(car)
-        : res.status(404).json({ error: this.errors.notFound });
+      if (!car) return res.status(404).json({ error: this.errors.notFound });
+      if ('error' in car) {
+        return res.status(400).json({ error: this.errors.idLength });
+      }
+      return res.status(200).json(car);
     } catch (error) {
       return res.status(500).json({ error: this.errors.internal });
     }
-  };
+  }; 
 
   update = async (
     req: Request<{ id: string }>,
@@ -72,7 +70,9 @@ class CarController extends Controller<Car> {
       const { body } = req;
       const car = await this.service.update(id, body);
       if (!car) return res.status(404).json({ error: this.errors.notFound });
-      if ('error' in car) return res.status(400).json(car);
+      if ('error' in car) {
+        return res.status(400).json({ error: this.errors.idLength });
+      }
       return res.status(200).json(car);
     } catch (error) {
       console.error(error);
@@ -90,7 +90,8 @@ class CarController extends Controller<Car> {
       const car = await this.service.delete(id);
       if (!car) return res.status(404).json({ error: this.errors.notFound });
       if ('error' in car) return res.status(400).json(car);
-      return res.status(200).json(car);
+
+      return res.status(204).send();
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: this.errors.internal });
