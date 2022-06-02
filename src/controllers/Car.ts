@@ -36,7 +36,7 @@ class CarController extends Controller<Car> {
   ): Promise<typeof res> => {
     try {
       const cars = await this.service.read();
-      return res.json(cars);
+      return res.status(200).json(cars);
     } catch (error) {
       return res.status(500).json({ error: this.errors.internal });
     }
