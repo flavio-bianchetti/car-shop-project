@@ -1,10 +1,10 @@
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import CarModel from '../../../models/Car';
+import mongoose from 'mongoose';
 import { Car } from '../../../interfaces/CarInterface';
-import { Types } from 'mongoose';
 
-const id = new Types.ObjectId();
+const id = 'aB1cD2eF3gH4iJ5kL6mN7oP8';
 
 const validCar = {
   _id: id,
@@ -14,7 +14,7 @@ const validCar = {
   buyValue: 3500,
   seatsQty: 2,
   doorsQty: 2
-} as Car;
+};
 
 const validCarUpdated = {
     _id: id,
@@ -24,22 +24,22 @@ const validCarUpdated = {
     buyValue: 3500,
     seatsQty: 2,
     doorsQty: 2
-  } as Car;
+  };
 
 describe('Insere novo carro', () => {
   let result: Car | null;
-
+  
   before(async () => {
-    const model = new CarModel();
-    sinon.stub(model, 'create').resolves(validCar);
-    result = await model.create(validCar);
+    const carModel = new CarModel();
+    sinon.stub(mongoose.Model, 'create').resolves(validCar);
+    result = await carModel.create(validCar);
   });
 
   after(() => {
     sinon.restore();
   });
 
-  it('testa a função create do Model', () => {
+  it('testa a função create do Model', async () => {
     expect(result).to.have.property('_id');
   });
 });
@@ -48,9 +48,9 @@ describe('Consulta todos os carros cadastrados no banco de dados', () => {
   let result: Car[] | null;
 
   before(async () => {
-    const model = new CarModel();
-    sinon.stub(model, 'read').resolves([validCar]);
-    result = await model.read();
+    const carModel = new CarModel();
+    sinon.stub(mongoose.Model, 'find').resolves([validCar]);
+    result = await carModel.read();
   });
 
   after(() => {
@@ -67,9 +67,9 @@ describe('Consulta um carro no banco de dados', () => {
   let result: Car | null;
 
   before(async () => {
-    const model = new CarModel();
-    sinon.stub(model, 'readOne').resolves(validCar);
-    result = await model.readOne(id.toString());
+    const carModel = new CarModel();
+    sinon.stub(mongoose.Model, 'findOne').resolves(validCar);
+    result = await carModel.readOne(id);
   });
 
   after(() => {
@@ -85,9 +85,9 @@ describe('Altera um carro no banco de dados', () => {
   let result: Car | null;
 
   before(async () => {
-    const model = new CarModel();
-    sinon.stub(model, 'update').resolves(validCarUpdated);
-    result = await model.update(id.toString(), validCarUpdated);
+    const carModel = new CarModel();
+    sinon.stub(mongoose.Model, 'findOneAndUpdate').resolves(validCarUpdated as any);
+    result = await carModel.update(id, validCarUpdated);
   });
 
   after(() => {
@@ -105,9 +105,9 @@ describe('Remove um carro no banco de dados', () => {
   let result: Car | null;
 
   before(async () => {
-    const model = new CarModel();
-    sinon.stub(model, 'delete').resolves(validCar);
-    result = await model.delete(id.toString());
+    const carModel = new CarModel();
+    sinon.stub(mongoose.Model, 'findOneAndDelete').resolves(validCar);
+    result = await carModel.delete(id);
   });
 
   after(() => {
@@ -115,6 +115,7 @@ describe('Remove um carro no banco de dados', () => {
   });
 
   it('testa a função delete do Model', () => {
+    
     expect(result).to.have.property('_id');
   });
 });

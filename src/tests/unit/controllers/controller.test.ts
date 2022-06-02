@@ -2,16 +2,14 @@ import * as sinon from 'sinon';
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import server from '../../../server';
-import CarModel from '../../../models/Car';
-import { Types } from 'mongoose';
-import request from 'supertest';
+import mongoose from 'mongoose';
 
 chai.use(chaiHttp);
 
-const id = new Types.ObjectId();
+const id = 'aB1cD2eF3gH4iJ5kL6mN7oP8';
 
 const validCar = {
-  _id: new Types.ObjectId(),
+  _id: id,
   model: 'Uno da Escada',
   year: 1963,
   color: 'red',
@@ -33,8 +31,7 @@ const validCarUpdated = {
 describe('Ao inserir um novo carro', () => {
 
   before(async () => {
-    const model = new CarModel();
-    sinon.stub(model, 'create').resolves(validCar as any);
+    sinon.stub(mongoose.Model, 'create').resolves(validCar as any);
   });
 
   after(() => {
@@ -53,8 +50,7 @@ describe('Ao inserir um novo carro', () => {
 describe('Consulta todos os carros cadastrados no banco de dados', () => {
 
   before(() => {
-    const controller = new CarModel();
-    sinon.stub(controller, 'read').resolves([validCar] as any);
+    sinon.stub(mongoose.Model, 'find').resolves([validCar] as any);
   });
 
   after(() => {
@@ -73,8 +69,7 @@ describe('Consulta todos os carros cadastrados no banco de dados', () => {
 describe('Consulta um carro no banco de dados', () => {
 
   before(() => {
-    const controller = new CarModel();
-    sinon.stub(controller, 'readOne').resolves(validCar as any);
+    sinon.stub(mongoose.Model, 'findOne').resolves(validCar as any);
   });
 
   after(() => {
@@ -93,8 +88,7 @@ describe('Consulta um carro no banco de dados', () => {
 describe('Altera um carro no banco de dados', () => {
 
   before(() => {
-    const controller = new CarModel();
-    sinon.stub(controller, 'update').resolves(validCarUpdated as any);
+    sinon.stub(mongoose.Model, 'findOneAndUpdate').resolves(validCarUpdated as any);
   });
 
   after(() => {
@@ -116,8 +110,7 @@ describe('Altera um carro no banco de dados', () => {
 describe('Remove um carro no banco de dados', () => {
 
   before(() => {
-    const controller = new CarModel();
-    sinon.stub(controller, 'delete').resolves(validCar as any);
+    sinon.stub(mongoose.Model, 'findOneAndDelete').resolves(validCar as any);
   });
 
   after(() => {
@@ -128,7 +121,6 @@ describe('Remove um carro no banco de dados', () => {
     const chaiHttpResponse = await chai
       .request(server.getApp())
       .delete(`/cars/${id}`);
-    expect(chaiHttpResponse).to.have.status(200);
-    expect(chaiHttpResponse.body).to.have.property('_id');
+    expect(chaiHttpResponse).to.have.status(204);
   });
 });

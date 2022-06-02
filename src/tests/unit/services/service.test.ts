@@ -2,10 +2,10 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import CarService from '../../../services/Car';
 import { ServiceError } from '../../../services';
+import mongoose from 'mongoose';
 import { Car } from '../../../interfaces/CarInterface';
-import { Types } from 'mongoose';
 
-const id = new Types.ObjectId();
+const id = 'aB1cD2eF3gH4iJ5kL6mN7oP8';
 
 const validCar = {
   _id: id,
@@ -15,7 +15,7 @@ const validCar = {
   buyValue: 3500,
   seatsQty: 2,
   doorsQty: 2
-} as Car;
+};
 
 const validCarUpdated = {
     _id: id,
@@ -25,15 +25,15 @@ const validCarUpdated = {
     buyValue: 3500,
     seatsQty: 2,
     doorsQty: 2
-  } as Car;
+};
 
 describe('Ao inserir um novo carro', () => {
   let result: Car | ServiceError | null;
 
   before(async () => {
-    const service = new CarService();
-    sinon.stub(service, 'create').resolves(validCar);
-    result = await service.create(validCar);
+    const carService = new CarService();
+    sinon.stub(mongoose.Model, 'create').resolves(validCar);
+    result = await carService.create(validCar);
   });
 
   after(() => {
@@ -49,9 +49,9 @@ describe('Consulta todos os carros cadastrados no banco de dados', () => {
   let result: Car[] | null;
 
   before(async () => {
-    const service = new CarService();
-    sinon.stub(service, 'read').resolves([validCar]);
-    result = await service.read();
+    const carService = new CarService();
+    sinon.stub(mongoose.Model, 'find').resolves([validCar]);
+    result = await carService.read();
   });
 
   after(() => {
@@ -68,9 +68,9 @@ describe('Consulta um carro no banco de dados', () => {
   let result: Car | ServiceError | null;
 
   before(async () => {
-    const service = new CarService();
-    sinon.stub(service, 'readOne').resolves(validCar);
-    result = await service.readOne(id.toString());
+    const carService = new CarService();
+    sinon.stub(mongoose.Model, 'findOne').resolves(validCar);
+    result = await carService.readOne(id);
   });
 
   after(() => {
@@ -86,9 +86,9 @@ describe('Altera um carro no banco de dados', () => {
   let result: Car | ServiceError | null;
 
   before(async () => {
-    const service = new CarService();
-    sinon.stub(service, 'update').resolves(validCarUpdated);
-    result = await service.update(id.toString(), validCar);
+    const carService = new CarService();
+    sinon.stub(mongoose.Model, 'findOneAndUpdate').resolves(validCarUpdated);
+    result = await carService.update(id, validCar);
   });
 
   after(() => {
@@ -104,9 +104,9 @@ describe('Remove um carro no banco de dados', () => {
   let result: Car | null;
 
   before(async () => {
-    const service = new CarService();
-    sinon.stub(service, 'delete').resolves(validCar);
-    result = await service.delete(id.toString());
+    const carService = new CarService();
+    sinon.stub(mongoose.Model, 'findOneAndDelete').resolves(validCar);
+    result = await carService.delete(id);
   });
 
   after(() => {
